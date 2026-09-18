@@ -1,0 +1,23 @@
+name: ci
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -e ".[dev]"
+      - run: pytest -q
+      # Happy path: synthetic week, one packet per resolvable lead, every packet graded.
+      - run: python -m fanoutgate seed data
+      - run: python -m fanoutgate prepare data --out out/run
+      - run: python -m fanoutgate check-dir out/run
+      # Exactly once: the first send delivers, the second MUST be refused by G6.
+      - run: python -m fanoutgate send out/run --now 2026-09-15T08:00:00
+      - run: "! python -m fanoutgate send out/run"
+      # The refusal is the assertion: every counterexample MUST fail, each for its own rule.
+      - run: python -m fanoutgate counterexamples out/cx --data data
+      - run: "! python -m fanoutgate check-dir out/cx --send"
+      # Keeps the argument for G4 measured rather than remembered.
+      - run: python -m fanoutgate reconcile data
