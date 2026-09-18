@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fanout-gate"
+version = "0.1.0"
+description = "One ops workbook -> one private KPI message per lead - and the gate that refuses to send any of them stale, misaddressed, leaking, paraphrased, or twice"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Joseph Bisaccia"}]
+requires-python = ">=3.10"
+keywords = ["gate", "ci", "data-isolation", "idempotency", "notifications", "excel", "ops-automation"]
+dependencies = ["openpyxl"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.urls]
+Homepage = "https://getaiintegrations.com/projects"
+Repository = "https://github.com/jbisaccia-9/fanout-gate"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "tests"]
+testpaths = ["tests"]
